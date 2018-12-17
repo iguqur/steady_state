@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .item {
+            width: 10px;
+            height: 10px;
+            /*border: red 1px solid;*/
+            display: flex;
+        }
+        .row {
+            display: flex;
+            flex-direction: row;
+        }
+    </style>
+</head>
+<body>
+<script>
+    let itemRowCount = 50
+    let itemColumnCount = 50
+
+    // 初始化格子
+    for (let row=0; row<itemRowCount; ++row) {
+        let rowDiv = document.createElement('div')
+        rowDiv.className = 'row'
+        for (let column=0; column<itemColumnCount; ++column) {
+            let item = document.createElement('div')
+            item.className = 'item'
+            item.id = 'item' + String(row * itemRowCount +column)
+
+            // 随机设置颜色
+            item.style.background = Math.random() > 0.9 ? 'white' : 'black'
+
+            rowDiv.appendChild(item)
+        }
+        document.body.appendChild(rowDiv)
+    }
+
+    // 更新所有格子的颜色
+    setInterval(() => {
+        for (let row=1; row<itemRowCount-1; ++row) {
+            for (let column=1; column<itemColumnCount-1; ++column) {
+                let item = document.getElementById('item' + String(row * itemRowCount +column))
+
+                // 循环获取item周边的8个格子,白色背景色的个数
+                let whiteNeighborCount = 0; // 记录当前item周围8个格子中白色格子的个数
+                for (let i=-1; i<2; ++i){
+                    for (let j=-1; j<2; ++j) {
+                        if (i === 1 && j === 1) {
+                            continue // 自身不处理
+                        }
+
+                        let neighborRow = row + i
+                        let neighborColumn = column +j
+                        if (neighborRow < 0 || neighborRow >= itemRowCount ||
+                        neighborColumn < 0 || neighborColumn >= itemColumnCount) {
+                            continue // 边角的情况不需要处理
+                        }
+                        let neighborItem = document.getElementById('item' + String(neighborRow * itemRowCount +neighborColumn))
+
+                        if (neighborItem.style.background === 'white') {
+                            ++whiteNeighborCount
+                        }
+                    }
+                }
+
+                // 更新当前格子的颜色
+                if (whiteNeighborCount > 3) {
+                    item.style.background = 'black'
+                } else if (whiteNeighborCount === 3) {
+                    item.style.background = 'white'
+                } else if (whiteNeighborCount === 2) {
+                    // 不变
+                } else {
+                    item.style.background = 'black'
+                }
+            }
+        }
+    }, 10)
+</script>
+</body>
+</html>
